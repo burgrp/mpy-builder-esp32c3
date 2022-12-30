@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+IMAGE_NAME=ghcr.io/burgrp/esp-idf:v4.4
+
+if which idf.py >/dev/null
+then
+    idf.py $@
+else
+    podman run --rm -it -v /home:/home -v /dev:/dev --workdir=${PWD} ${IMAGE_NAME} idf.py $@
+fi

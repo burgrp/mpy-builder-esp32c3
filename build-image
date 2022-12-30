@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -e
+
+IDF_VERSION="${1:-v4.4}"
+
+if [ -z $IDF_VERSION ]
+then
+    echo "Use: $(basename $0) <idf-version>"
+    exit 1
+fi
+
+IMAGE_NAME=ghcr.io/burgrp/esp-idf:$IDF_VERSION
+TMP_IMAGE_NAME=$IMAGE_NAME-tmp
+
+podman build . --build-arg IDF_VERSION=$IDF_VERSION --build-arg IMAGE_NAME=$IMAGE_NAME --file Containerfile --tag $TMP_IMAGE_NAME
+
+cat >Containerfile.dyn <<EOF
+FROM $TMP_IMAGE_NAME
+EOF
+
+podman run -it --rm $TMP_IMAGE_NAME sh -c ". /esp/idf/export.sh && set" | grep -E "(PATH|IDF).*=" | sed "s/^/ENV /;s/'//g" >>Containerfile.dyn
+
+cat >>Containerfile.dyn <<EOF
+LABEL INIT="podman run --rm -it -v \\\$PWD:/project --workdir=/project IMAGE init-project IMAGE"
+EOF
+
+podman build . --file Containerfile.dyn --tag $IMAGE_NAME
+
+podman rmi $TMP_IMAGE_NAME
+
+#podman push $IMAGE_NAME

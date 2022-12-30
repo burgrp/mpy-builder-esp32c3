@@ -1,0 +1,44 @@
+#!/bin/bash
+
+set -e
+
+IMAGE_NAME=$1
+TOOLS=/esp/init
+EXAMPLE=/esp/idf/examples/get-started/blink
+DST=.
+
+if [ ! -z "$(ls -A $DST)" ]
+then
+    echo "Can initialize empty directory only." 1>&2
+    exit 1
+fi
+
+cat >$DST/.gitignore <<EOF
+.vscode
+build
+EOF
+
+cp -r $TOOLS/* $DST
+cp -r $EXAMPLE/* $DST
+
+IMAGE_NAME_ESC=$(echo $IMAGE_NAME | sed "s/\//\\\\\//g")
+for FILE in Makefile idf
+do
+    sed -i "s/__IMAGE_NAME__/$IMAGE_NAME_ESC/g" $DST/$FILE
+done
+
+cat <<EOF
+Great, your new project is ready.
+
+First of all, select your target by:
+./idf set-target
+
+Then configure your project by:
+./idf menuconfig
+
+And finally build and flash your project by:
+./idf flash
+
+Also check the generated Makefile.
+Running "make" without argument gives you a help.
+EOF
