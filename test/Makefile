@@ -11,9 +11,9 @@ CONTAINER_NAME=${PROJECT_NAME}-builder
 help:
 	@awk 'BEGIN {FS = ":.*##"; printf "Usage: make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
-requirements: ## Resolves and downloads dependencies in requirements.txt
-	rm -rf requirements
-	micropython -m upip install -r requirements.txt -p ./requirements
+submodules: ## Resolves and downloads dependencies in requirements.txt
+	git submodule init
+	git submodule update
 
 start:	## Starts build container
 	podman run -it --rm --name ${CONTAINER_NAME} --privileged -v ${PWD}:/project -v /dev:/dev -w /opt/mpy/ports/esp32 -e BOARD=GENERIC_C3_USB -e FROZEN_MANIFEST=/project/manifest.py -e PORT=${PORT} ${BUILDER_IMAGE}
