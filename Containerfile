@@ -1,4 +1,7 @@
-FROM mcr.microsoft.com/devcontainers/base:debian
+ARG UBU_VERSION
+FROM ubuntu:${UBU_VERSION}
+
+ENV LC_ALL=C
 
 RUN apt-get update
 RUN apt-get install -y \
@@ -19,26 +22,22 @@ RUN apt-get install -y \
     dfu-util \
     libusb-1.0-0
 
-ENV IDF_PATH=/esp/idf
-
+ENV IDF_TOOLS_PATH=/opt
+ENV IDF_PATH=$IDF_TOOLS_PATH/idf
 WORKDIR $IDF_PATH
-
 ARG IDF_VERSION
 RUN git clone -c advice.detachedHead=false --recursive --branch ${IDF_VERSION} --depth 1 https://github.com/espressif/esp-idf.git .
-
-ENV IDF_TOOLS_PATH=/esp
 RUN ./install.sh esp32c3
-RUN ln -s /esp/idf/tools/idf.py /esp/idf/tools/idf
-RUN rm -rf $(find /esp -name ".git")
 
-ARG IMAGE_NAME
-COPY init /esp/init
-COPY init-project /usr/bin/
+ENV MPY_PATH=/opt/mpy
+WORKDIR $MPY_PATH
+ARG MPY_VERSION
+RUN git clone -c advice.detachedHead=false --recursive --branch ${MPY_VERSION} --depth 1 https://github.com/micropython/micropython.git .
 
-ENV LC_ALL=C
+RUN rm -rf $(find /opt -name ".git")
 
 CMD ["bash"]
 
-LABEL org.opencontainers.image.source https://github.com/burgrp/esp-idf.git
-LABEL org.opencontainers.image.description ESP32 IDF $IDF_VERSION tooling
+LABEL org.opencontainers.image.source https://github.com/burgrp/mpy-builder-esp32c3
+LABEL org.opencontainers.image.description MicroPython builder for ESP32C3
 

@@ -2,7 +2,10 @@
 
 set -e
 
-IDF_VERSION="${1:-v4.4}"
+UBU_VERSION=22.10
+IDF_VERSION=v4.4
+#MPY_VERSION=v1.19.1
+MPY_VERSION=master
 
 if [ -z $IDF_VERSION ]
 then
@@ -10,16 +13,16 @@ then
     exit 1
 fi
 
-IMAGE_NAME=ghcr.io/burgrp/esp-idf:$IDF_VERSION
+IMAGE_NAME=ghcr.io/burgrp/mpy-builder-esp32c3
 TMP_IMAGE_NAME=$IMAGE_NAME-tmp
 
-podman build . --build-arg IDF_VERSION=$IDF_VERSION --build-arg IMAGE_NAME=$IMAGE_NAME --file Containerfile --tag $TMP_IMAGE_NAME
+podman build . --build-arg UBU_VERSION=$UBU_VERSION --build-arg IDF_VERSION=$IDF_VERSION --build-arg MPY_VERSION=$MPY_VERSION --build-arg IMAGE_NAME=$IMAGE_NAME --file Containerfile --tag $TMP_IMAGE_NAME
 
 cat >Containerfile.dyn <<EOF
 FROM $TMP_IMAGE_NAME
 EOF
 
-podman run -it --rm $TMP_IMAGE_NAME sh -c ". /esp/idf/export.sh && set" | grep -E "(PATH|IDF).*=" | sed "s/^/ENV /;s/'//g" >>Containerfile.dyn
+podman run -it --rm $TMP_IMAGE_NAME sh -c ". /opt/idf/export.sh && set" | grep -E "(PATH|IDF).*=" | sed "s/^/ENV /;s/'//g" >>Containerfile.dyn
 
 cat >>Containerfile.dyn <<EOF
 LABEL INIT="podman run --rm -it -v \\\$PWD:/project --workdir=/project IMAGE init-project IMAGE"

@@ -1,12 +1,7 @@
-# ESP32 IDF tooling in container
+# MicroPython builder for ESP32C3
 
 ## Quick start
 
-```
-mkdir my-project
-cd my-project
-podman container runlabel init burgrp/esp-idf:v4.4
-```
 ## Dev notes
 
 ### Build and push the image
