@@ -1,11 +1,7 @@
 import os
 
-
-def freeze(dir, modules):
-    print(dir, modules)
-
+#####################################################
 # Freeze application files
-
 
 modules = []
 
@@ -16,6 +12,7 @@ for file in os.listdir('.'):
 freeze('.', modules)
 
 
+#####################################################
 # Freeze external packages
 
 PACKAGES_DIR = 'packages'
@@ -26,4 +23,4 @@ for root, dirs, files in os.walk(PACKAGES_DIR):
     if '__init__.py' in files:
         root_parts = root.split('/')
         d = root_parts[-1:][0]
-        freeze('/' + '/'.join(root_parts[:-1]), [d + "/" + f for f in files])
+        freeze('/'.join(root_parts[:-1]), [d + "/" + f for f in files])
