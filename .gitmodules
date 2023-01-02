@@ -1,0 +1,3 @@
+[submodule "test/micropython-vec"]
+	path = test/micropython-vec
+	url = https://gitlab.com/nickoala/micropython-vec.git
