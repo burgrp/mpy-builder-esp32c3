@@ -1,9 +1,3 @@
-[submodule "test/packages/micropython-esp-wifi"]
-	path = test/packages/micropython-esp-wifi
-	url = https://github.com/burgrp/micropython-esp-wifi.git
-[submodule "test/packages/micropython-vec"]
-	path = test/packages/micropython-vec
+[submodule "test/app/sub/micropython-vec"]
+	path = test/app/sub/micropython-vec
 	url = https://gitlab.com/nickoala/micropython-vec.git
-[submodule "test/packages/micropython-async"]
-	path = test/packages/micropython-async
-	url = https://github.com/peterhinch/micropython-async.git
