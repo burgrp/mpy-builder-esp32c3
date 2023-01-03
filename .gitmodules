@@ -4,3 +4,6 @@
 [submodule "test/packages/micropython-vec"]
 	path = test/packages/micropython-vec
 	url = https://gitlab.com/nickoala/micropython-vec.git
+[submodule "test/packages/micropython-async"]
+	path = test/packages/micropython-async
+	url = https://github.com/peterhinch/micropython-async.git

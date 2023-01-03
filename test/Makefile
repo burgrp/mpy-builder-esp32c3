@@ -16,7 +16,13 @@ submodule: ## Initializes and updates git submodules
 	git submodule update
 
 start:	## Starts build container
-	podman run -it --rm --name ${CONTAINER_NAME} --privileged -v ${PWD}:/project -v /dev:/dev -w /opt/mpy/ports/esp32 -e BOARD=GENERIC_C3_USB -e FROZEN_MANIFEST=/project/manifest.py -e PORT=${PORT} ${BUILDER_IMAGE}
+	podman run -it --rm --name ${CONTAINER_NAME} --privileged -v ${PWD}:/project -v /dev:/dev -w /opt/mpy/ports/esp32 -e BOARD=GENERIC_C3_USB -e PORT=${PORT} ${BUILDER_IMAGE}
 
-deploy: ## Builds and flashes the application
-	podman exec -it ${CONTAINER_NAME} make deploy
+vanilla: ## Builds and flashes vanilla MicroPython
+	podman exec -it ${CONTAINER_NAME} make clean deploy
+
+dev: ## Mount application directory, run main and repl
+	mpremote mount -l app exec "import main" repl
+
+freeze: ## Builds and flashes frozen application
+	podman exec -it ${CONTAINER_NAME} make FROZEN_MANIFEST=/project/manifest.py clean deploy
