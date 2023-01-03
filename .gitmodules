@@ -1,3 +1,6 @@
 [submodule "test/app/sub/micropython-vec"]
 	path = test/app/sub/micropython-vec
 	url = https://gitlab.com/nickoala/micropython-vec.git
+[submodule "test/sub/micropython-vec"]
+	path = test/sub/micropython-vec
+	url = https://gitlab.com/nickoala/micropython-vec.git
