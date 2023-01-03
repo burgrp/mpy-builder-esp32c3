@@ -22,6 +22,8 @@ RUN apt-get install -y \
     dfu-util \
     libusb-1.0-0
 
+RUN pip3 install mpremote
+
 ENV IDF_TOOLS_PATH=/opt
 ENV IDF_PATH=$IDF_TOOLS_PATH/idf
 WORKDIR $IDF_PATH
@@ -35,6 +37,7 @@ ARG MPY_VERSION
 RUN git clone -c advice.detachedHead=false --recursive --branch ${MPY_VERSION} --depth 1 https://github.com/micropython/micropython.git .
 
 RUN rm -rf $(find /opt -name ".git")
+RUN apt-get clean
 
 CMD ["bash"]
 

@@ -2,7 +2,6 @@
 .PHONY: requirements deploy
 
 PROJECT_NAME=test
-#BUILDER_IMAGE=__IMAGE_NAME__
 BUILDER_IMAGE=ghcr.io/burgrp/mpy-builder-esp32c3:latest
 PORT=/dev/ttyACM0
 
@@ -22,7 +21,7 @@ vanilla: ## Builds and flashes vanilla MicroPython
 	podman exec -it ${CONTAINER_NAME} make clean deploy
 
 dev: ## Mount application directory, run main and repl
-	mpremote mount -l app exec "import main" repl
+	podman exec -it -w /project ${CONTAINER_NAME} mpremote mount -l app exec "import main" repl
 
 freeze: ## Builds and flashes frozen application
 	podman exec -it ${CONTAINER_NAME} make FROZEN_MANIFEST=/project/manifest.py clean deploy
