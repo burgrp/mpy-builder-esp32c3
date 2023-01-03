@@ -30,6 +30,6 @@ EOF
 
 podman build ctx --file Containerfile.dyn --tag $IMAGE_NAME
 
-#podman rmi $TMP_IMAGE_NAME
+podman push $IMAGE_NAME
 
-#podman push $IMAGE_NAME
+podman rmi $TMP_IMAGE_NAME
