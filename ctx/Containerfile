@@ -40,7 +40,3 @@ RUN rm -rf $(find /opt -name ".git")
 RUN apt-get clean
 
 CMD ["bash"]
-
-LABEL org.opencontainers.image.source https://github.com/burgrp/mpy-builder-esp32c3
-LABEL org.opencontainers.image.description MicroPython builder for ESP32C3
-

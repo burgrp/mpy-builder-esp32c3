@@ -2,10 +2,10 @@
 
 set -e
 
+MPY_VERSION=v1.20.0
+IDF_VERSION=v4.4.6
+
 UBU_VERSION=22.10
-IDF_VERSION=v4.4
-MPY_VERSION=v1.19.1
-#MPY_VERSION=master
 
 if [ -z $IDF_VERSION ]
 then
@@ -13,7 +13,7 @@ then
     exit 1
 fi
 
-IMAGE_NAME=ghcr.io/burgrp/mpy-builder-esp32c3
+IMAGE_NAME=ghcr.io/burgrp/mpy-builder-esp32c3:$MPY_VERSION-$IDF_VERSION
 TMP_IMAGE_NAME=$IMAGE_NAME-tmp
 
 podman build ctx --build-arg UBU_VERSION=$UBU_VERSION --build-arg IDF_VERSION=$IDF_VERSION --build-arg MPY_VERSION=$MPY_VERSION --build-arg IMAGE_NAME=$IMAGE_NAME --file Containerfile --tag $TMP_IMAGE_NAME
@@ -25,6 +25,8 @@ EOF
 podman run -it --rm $TMP_IMAGE_NAME sh -c ". /opt/idf/export.sh && set" | grep -E "(PATH|IDF).*=" | sed "s/^/ENV /;s/'//g" >>Containerfile.dyn
 
 cat >>ctx/Containerfile.dyn <<EOF
+LABEL org.opencontainers.image.source https://github.com/burgrp/mpy-builder-esp32c3
+LABEL org.opencontainers.image.description MicroPython builder for ESP32C3
 LABEL INIT="podman run --rm -it -v \\\$PWD:/project --workdir=/project IMAGE init-project IMAGE"
 EOF
 
