@@ -6,8 +6,7 @@
 .DEFAULT_GOAL := help
 .PHONY: help submodule start port vanilla freeze flash dev
 
-MPY_VERSION=v1.20.0
-IDF_VERSION=v4.4.6
+include $(dir $(lastword $(MAKEFILE_LIST)))/versions.inc
 
 BUILDER_IMAGE=ghcr.io/burgrp/mpy-builder-esp32c3:${MPY_VERSION}-${IDF_VERSION}
 
@@ -27,21 +26,24 @@ submodule: ## Initializes and updates git submodules
 	git submodule update
 
 start:	## Starts build container
-	podman run -it --rm --name ${CONTAINER_NAME} --privileged -v ${PWD}:/project -v /dev:/dev -w /opt/mpy/ports/esp32 -e BOARD=GENERIC_C3_USB ${BUILDER_IMAGE}
+	podman run -it --rm --name ${CONTAINER_NAME} --privileged -v ${PWD}:/project -v /dev:/dev -w /opt/mpy/ports/esp32 -e BOARD=ESP32_GENERIC_C3 ${BUILDER_IMAGE}
 
 port: ## Checks if PORT is set
 	@[ "${PORT}" ] || ( echo ">> PORT is not set"; exit 1 )
 
 clean: ## Cleans the build directory
+	${RUN} make -C /opt/mpy/mpy-cross clean
 	${RUN} make clean
 
-vanilla: ## Builds vanilla MicroPython for further development using `make dev`
+vanilla: clean ## Builds vanilla MicroPython for further development using `make dev`
+	${RUN} make -C /opt/mpy/mpy-cross
 	${RUN} make FROZEN_MANIFEST=/project/manifest-dev.py USER_C_MODULES=/project/modules.cmake
 
 dev: port ## Mount application directory, run main and repl
 	${RUN} mpremote connect ${PORT} mount -l /project/app exec "import main" repl
 
-frozen: ## Builds frozen application
+frozen: clean ## Builds frozen application
+	${RUN} make -C /opt/mpy/mpy-cross
 	${RUN} make FROZEN_MANIFEST=/project/manifest.py USER_C_MODULES=/project/modules.cmake
 
 flash: port ## Flashes the application - requires the project to by already built using `make vanilla` or `make freeze`

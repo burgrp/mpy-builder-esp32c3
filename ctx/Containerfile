@@ -22,7 +22,7 @@ RUN apt-get install -y \
     dfu-util \
     libusb-1.0-0
 
-RUN pip3 install mpremote
+RUN pip3 install --break-system-packages mpremote virtualenv
 
 ENV IDF_TOOLS_PATH=/opt
 ENV IDF_PATH=$IDF_TOOLS_PATH/idf
