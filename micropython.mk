@@ -32,18 +32,15 @@ port: ## Checks if PORT is set
 	@[ "${PORT}" ] || ( echo ">> PORT is not set"; exit 1 )
 
 clean: ## Cleans the build directory
-	${RUN} make -C /opt/mpy/mpy-cross clean
 	${RUN} make clean
 
 vanilla: clean ## Builds vanilla MicroPython for further development using `make dev`
-	${RUN} make -C /opt/mpy/mpy-cross
 	${RUN} make FROZEN_MANIFEST=/project/manifest-dev.py USER_C_MODULES=/project/modules.cmake
 
 dev: port ## Mount application directory, run main and repl
 	${RUN} mpremote connect ${PORT} mount -l /project/app exec "import main" repl
 
 frozen: clean ## Builds frozen application
-	${RUN} make -C /opt/mpy/mpy-cross
 	${RUN} make FROZEN_MANIFEST=/project/manifest.py USER_C_MODULES=/project/modules.cmake
 
 flash: port ## Flashes the application - requires the project to by already built using `make vanilla` or `make freeze`
